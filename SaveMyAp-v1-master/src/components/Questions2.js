@@ -1,0 +1,180 @@
+import React, { Component } from 'react';
+import Question from './Question';
+import FromEmail from './form-email';
+import { Link } from 'react-router-dom';
+
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+
+class Questions2 extends Component{
+
+    constructor(props){
+        super(props)
+        this.state={
+            nextPage:1,
+            value:0,
+            valores:[0,0,0,0,0,0,0,0,0,0,0,0],
+            selected:[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            questions: [],
+            ans:[],
+            loading: true
+        };
+    }
+
+    //Info process functions
+    sum=(value)=>{
+        this.state.valores[this.state.nextPage]=value
+        this.cambiarContador(this.state.value+value)
+        this.cambiarPagina(this.state.nextPage+1)
+         console.log(this.state.value)
+     }
+
+     multi=(value)=>{
+         let total=this.state.value +(this.state.value)*0.5*value
+        this.state.valores[this.state.nextPage]=(this.state.value)*0.5*value
+        this.cambiarContador(total)
+        this.cambiarPagina(this.state.nextPage+1)
+        console.log(this.state.value)
+        
+     }
+ 
+     rest=()=>{
+        this.cambiarContador(this.state.value-this.state.valores[this.state.nextPage-1])
+        this.cambiarPagina(this.state.nextPage-1)
+     }
+
+     cambiarContador=(n)=>{
+         this.setState({value:n})
+     }
+
+     cambiarPagina=(n)=>{
+        this.setState({nextPage:n})
+    }
+
+    guardarRespuesta=(n,res)=>{
+        this.state.selected[this.state.nextPage]=n;
+        this.state.ans[this.state.nextPage]=res;
+    }
+
+    //added API func
+    componentDidMount(){
+        //fetch('http://10.16.0.64:3005/api')
+        fetch('http://valuemyappapidev.scio.local/api')
+        .then(res => res.json())
+        .then((data) => {
+            this.setState({questions:data.questions, loading:false})
+        })
+        .catch(console.log)
+    }
+
+    render(){
+    if(!this.state.loading){
+        switch(this.state.nextPage){
+            case 1:
+                return (
+                    <div>
+                        {!this.state.loading &&
+                        <div>
+                        <Question 
+                            page={this.state.nextPage}
+                            question={this.state.questions[this.state.nextPage-1].content}
+                            answers={this.state.questions[this.state.nextPage-1].answers}
+                            sumar={this.sum}
+                            seleccionar={this.guardarRespuesta}
+                            select={this.state.selected[this.state.nextPage]}
+                        ></Question>
+                        <Row>
+                            <Col md="2"></Col>
+                            <Col md="4">
+                                <div className="back-btn-cont">
+                                    <Link to="/" ><button className="first-question">Back</button></Link>  
+                                </div>
+                            </Col>
+                            <Col md="4" className="asd">
+                                <div className="back-btn-cont">
+                                    <button className="next-btn" onClick={(Event)=>(this.cambiarPagina(this.state.nextPage+1))}>Next</button>
+                                </div>
+                            </Col>
+                            <Col md="2" >
+                            </Col>
+                        </Row>
+                        </div>
+                        }
+                    </div>
+                )
+            case 2:      
+            case 3:
+            case 4: 
+            case 5: 
+            case 6: 
+            case 7: 
+            case 8: 
+            case 9:
+                return (
+                    <div>
+                        {!this.state.loading &&
+                        <div>
+                        <Question 
+                            page={this.state.nextPage}
+                            question={this.state.questions[this.state.nextPage-1].content}
+                            answers={this.state.questions[this.state.nextPage-1].answers}
+                            sumar={this.sum}
+                            seleccionar={this.guardarRespuesta}
+                            select={this.state.selected[this.state.nextPage]}
+                        ></Question>
+                        <Row>
+                            <Col md="2"></Col>
+                            <Col md="8">
+                            <div className="back-btn-cont">
+                            <button className="back-btn"  onClick={(Event) => (this.rest())}>Back</button>
+                            <button className="back-btn"  onClick={(Event) => (this.rest())}>Next</button>
+                            </div>
+                            </Col>
+                            <Col md="2"></Col>
+                        </Row>
+                        </div>
+                        }
+                    </div>
+                )
+            case 10: 
+                return(
+                    <div>
+                        {!this.state.loading &&
+                        <div>
+                        <Question 
+                            page={this.state.nextPage}
+                            question={this.state.questions[this.state.nextPage-1].content}
+                            answers={this.state.questions[this.state.nextPage-1].answers}
+                            sumar={this.multi}
+                            seleccionar={this.guardarRespuesta}
+                            select={this.state.selected[this.state.nextPage]}
+                        ></Question>
+                        <Row>
+                            <Col md="2"></Col>
+                            <Col md="8">
+                            <div className="back-btn-cont">
+                            <button className="back-btn"  onClick={(Event) => (this.rest())}>Back</button>
+                            
+                            </div>
+                            </Col>
+                            <Col md="2"><button className="next-btn">Next</button></Col>
+                        </Row>
+                        </div>
+                        }
+                    </div>
+                )
+            case 11:
+                return(
+                    <div>
+                        <FromEmail val={this.state.value} def={this.state.ans} back={this.rest}></FromEmail>
+                    </div>
+                    
+                )
+            }
+        }else{
+            return <h5>Loading...</h5>
+        }
+    }
+}
+
+export default Questions2;
